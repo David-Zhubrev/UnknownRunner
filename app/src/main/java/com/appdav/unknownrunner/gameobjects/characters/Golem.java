@@ -31,6 +31,13 @@ public class Golem extends Enemy implements GameObject.Callback {
         extraSpeed = GOLEM_SPEED;
         attachPlayer(new GolemAi(this));
         createSecondaryFrameManagers();
+        attachCallback();
+    }
+
+    private void attachCallback() {
+        if (!dieFrameManager.hasCallback()) {
+            dieFrameManager.attachCallback(this);
+        }
     }
 
     private void createSecondaryFrameManagers() {
@@ -64,6 +71,14 @@ public class Golem extends Enemy implements GameObject.Callback {
         return walkFrameManager;
     }
 
+    @Override
+    public void destroy() {
+        super.destroy();
+        if (dieFrameManager.hasCallback()) {
+            dieFrameManager.detachCallback();
+        }
+    }
+
     private FrameManager createWinFrameManager() {
         return null;
         //return currentFrameManager;
@@ -87,7 +102,7 @@ public class Golem extends Enemy implements GameObject.Callback {
         resIds.add(R.drawable.golem1_dying_012);
         resIds.add(R.drawable.golem1_dying_013);
         resIds.add(R.drawable.golem1_dying_014);
-        return createFrameManager(resIds, this);
+        return createFrameManager(resIds, this, true);
     }
 
     @Override

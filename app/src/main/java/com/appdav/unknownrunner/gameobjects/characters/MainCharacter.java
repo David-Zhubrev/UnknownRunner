@@ -52,24 +52,26 @@ public class MainCharacter extends Character implements GameObject.Callback {
 
     @Override
     void onUpdateBeforeCollisionHandling() {
+        if (x < -Screen.screenWidth / 2 || y + height > Screen.screenHeight){
+            die();
+            return;
+        }
+        else if (x < initialPosition){
+            nextMoves.add(Move.MOVE_RIGHT);
+        }
         if (isJumping) nextMoves.add(Move.JUMP);
         if (collisions != null && !collisions.isEmpty()) {
             for (Collision collision : collisions) {
                 if (collision.source instanceof Enemy) {
                     if (collision.position == CollisionHandler.Position.BOTTOM) {
                         ((Enemy) collision.source).die();
+                        nextMoves.add(Move.JUMP);
                     } else {
                         die();
                     }
                 }
             }
         }
-    }
-
-    @Override
-    public void update() {
-        super.update();
-        if (this.x < -Screen.screenWidth / 5) die();
     }
 
     @Override

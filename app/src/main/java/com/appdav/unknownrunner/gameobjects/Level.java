@@ -7,7 +7,9 @@ import android.graphics.Paint;
 import com.appdav.unknownrunner.Speed;
 import com.appdav.unknownrunner.gameobjects.ai.GroundGenerator;
 import com.appdav.unknownrunner.gameobjects.ai.HumanPlayer;
+import com.appdav.unknownrunner.gameobjects.characters.Character;
 import com.appdav.unknownrunner.gameobjects.characters.Enemy;
+import com.appdav.unknownrunner.gameobjects.characters.MainCharacter;
 import com.appdav.unknownrunner.tools.CollisionHandler;
 
 import java.util.List;
@@ -60,6 +62,9 @@ public abstract class Level implements GameDrawable, HumanPlayer.GameOverCallbac
                 }
                 if (drawable instanceof Enemy) {
                     enemies.remove(drawable);
+                }
+                if (drawable instanceof MainCharacter){
+                    endGame();
                 }
                 drawables.remove(drawable);
             }

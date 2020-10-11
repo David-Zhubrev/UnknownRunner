@@ -78,6 +78,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (controller == null) return true;
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_UP:
                 if (event.getX() < Screen.screenWidth / 2f) {
@@ -86,8 +87,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 break;
             case MotionEvent.ACTION_POINTER_UP:
                 if (event.getX() > Screen.screenWidth / 2f) {
-                    controller.onRightSideClick();
-                } else controller.onLeftSideClick();
+                    controller.onLeftSideClick();
+                } else controller.onRightSideClick();
                 break;
         }
         return true;

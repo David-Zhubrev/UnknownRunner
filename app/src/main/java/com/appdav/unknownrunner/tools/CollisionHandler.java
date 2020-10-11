@@ -28,7 +28,10 @@ public class CollisionHandler {
             Position vertical, horizontal, result;
             horizontal = intersection.left == b.left ? Position.RIGHT : Position.LEFT;
             vertical = intersection.top == b.top ? Position.BOTTOM : Position.TOP;
-            result = (abs(intersection.left - intersection.right) > abs(intersection.top - intersection.bottom)) ?
+            int width = abs(intersection.left - intersection.right);
+            int height = abs(intersection.top - intersection.bottom);
+            int bHeight = abs(b.top - b.bottom);
+            result = (width > height || height < bHeight / 6 ) ?
                     vertical : horizontal;
             collidable1.onCollisionWith(new Collision(collidable2, result));
             collidable2.onCollisionWith(new Collision(collidable1, result));

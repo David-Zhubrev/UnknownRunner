@@ -8,10 +8,11 @@ import com.appdav.unknownrunner.Speed;
 import com.appdav.unknownrunner.gameobjects.ai.GroundGenerator;
 import com.appdav.unknownrunner.gameobjects.ai.GroundGenerator.GroundGenerationPattern;
 import com.appdav.unknownrunner.gameobjects.ai.GroundGenerator.PlatformType;
-import com.appdav.unknownrunner.gameobjects.ai.TestGenerator;
 import com.appdav.unknownrunner.gameobjects.platform.GapPlatform;
 import com.appdav.unknownrunner.gameobjects.platform.GroundPlatform;
+import com.appdav.unknownrunner.gameobjects.platform.LeftEdgePlatform;
 import com.appdav.unknownrunner.gameobjects.platform.Platform;
+import com.appdav.unknownrunner.gameobjects.platform.RightEdgePlatform;
 import com.appdav.unknownrunner.tools.Screen;
 
 import java.util.ArrayList;
@@ -27,54 +28,115 @@ public class Ground implements GameDrawable {
 
     private int platformWidth, platformHeight;
 
+    private int ground_level_low;
+    private int ground_level_high;
+
     private GroundGenerator generator;
 
     public Ground(Resources res, Speed speed) {
         this.res = res;
         this.speed = speed;
-        //TODO change generator
-        generator = new TestGenerator();
+        generator = new GroundGenerator();
         platforms = new ArrayList<>();
         platforms.addAll(createFullScreenPlatform(0));
     }
 
-    private Platform createPlatform(PlatformType type) {
+    private List<Platform> platformBuffer;
+
+    private List<Platform> createPlatform(PlatformType type) {
+        if (platformBuffer == null) platformBuffer = new ArrayList<>();
+        else platformBuffer.clear();
         Platform result;
         switch (type) {
             case GAP:
                 result = new GapPlatform(res, speed);
-                result.y = Screen.screenHeight - result.height;
+                result.y = ground_level_low;
+                platformBuffer.add(result);
                 break;
             case GROUND:
                 result = new GroundPlatform(res, speed);
-                result.y = Screen.screenHeight - result.height;
+                result.y = ground_level_low;
+                platformBuffer.add(result);
                 break;
             case HIGH:
                 result = new GroundPlatform(res, speed);
-                result.y = Screen.screenHeight - result.height * 2;
+                result.y = ground_level_high;
+                platformBuffer.add(result);
+                break;
+            case HIGH_WITH_GROUND:
+                result = new GroundPlatform(res, speed);
+                result.y = ground_level_high;
+                platformBuffer.add(result);
+                result = new GroundPlatform(res, speed);
+                result.y = ground_level_low;
+                platformBuffer.add(result);
+                break;
+            case RIGHT_EDGE:
+                result = new RightEdgePlatform(res, speed);
+                result.y = ground_level_low;
+                platformBuffer.add(result);
+                break;
+            case LEFT_EDGE:
+                result = new LeftEdgePlatform(res, speed);
+                result.y = ground_level_low;
+                platformBuffer.add(result);
+                break;
+            case RIGHT_EDGE_HIGH:
+                result = new LeftEdgePlatform(res, speed);
+                result.y = ground_level_high;
+                platformBuffer.add(result);
+                break;
+            case LEFT_EDGE_HIGH:
+                result = new RightEdgePlatform(res, speed);
+                result.y = ground_level_high;
+                platformBuffer.add(result);
+                break;
+            case RIGHT_EDGE_HIGH_WITH_GROUND:
+                result = new LeftEdgePlatform(res, speed);
+                result.y = ground_level_high;
+                platformBuffer.add(result);
+                result = new GroundPlatform(res, speed);
+                result.y = ground_level_low;
+                platformBuffer.add(result);
+                break;
+            case LEFT_EDGE_HIGH_WITH_GROUND:
+                result = new RightEdgePlatform(res, speed);
+                result.y = ground_level_high;
+                platformBuffer.add(result);
+                result = new GroundPlatform(res, speed);
+                result.y = ground_level_low;
+                platformBuffer.add(result);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + type);
         }
-        return result;
+        return platformBuffer;
     }
 
 
     private List<Platform> createFullScreenPlatform(int startingCoordinate) {
         if (platformWidth == 0) {
-            Platform platform = createPlatform(PlatformType.GAP);
+            Platform platform = new GroundPlatform(res, speed);
             platformWidth = platform.width;
             platformHeight = platform.height;
+            ground_level_low = Screen.screenHeight - platformHeight;
+            ground_level_high = Screen.screenHeight - platformHeight * 4;
             platform.destroy();
         }
         GroundGenerationPattern pattern = generator.nextPattern(startingCoordinate, platformWidth);
         List<Platform> platforms = new ArrayList<>();
         int x = startingCoordinate;
         for (PlatformType type : pattern.getPlatformTypes()) {
-            Platform platform = createPlatform(type);
-            platform.x = x;
-            x += platform.width;
-            platforms.add(platform);
+            List<Platform> nextPlatforms = createPlatform(type);
+            int arraySize = nextPlatforms.size();
+            for (int i = 0; i < arraySize; i++) {
+                Platform platform = nextPlatforms.get(i);
+                platform.x = x;
+                platforms.add(platform);
+                if (i == arraySize - 1) {
+                    x += platform.width;
+                }
+            }
         }
         return platforms;
     }

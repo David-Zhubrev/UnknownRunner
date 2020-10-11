@@ -42,14 +42,15 @@ public abstract class Character extends GameObject implements Playable, Collidab
     @Override
     public void destroy() {
         super.destroy();
-        player.releasePlayer();
-        detachPlayer();
+        if (player != null){
+            player.releasePlayer();
+            detachPlayer();
+        }
     }
 
     @Override
     public void update() {
         super.update();
-        if (isDestroyed) return;
         if (player != null) player.makeMove();
         collisionRect = null;
         onUpdateBeforeCollisionHandling();
@@ -64,10 +65,11 @@ public abstract class Character extends GameObject implements Playable, Collidab
                     }
                     if (collision.position == Position.LEFT) {
                         nextMoves.add(Move.MOVE_RIGHT);
+                        nextMoves.remove(Move.MOVE_LEFT);
                     } else if (collision.position == Position.RIGHT) {
                         nextMoves.add(Move.MOVE_LEFT);
+                        nextMoves.remove(Move.MOVE_RIGHT);
                     }
-
                 }
             }
         }

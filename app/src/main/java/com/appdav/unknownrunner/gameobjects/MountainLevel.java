@@ -58,7 +58,7 @@ public class MountainLevel extends Level {
 
     @Override
     public void update() {
-        checkGolems();
         super.update();
+        checkGolems();
     }
 }
