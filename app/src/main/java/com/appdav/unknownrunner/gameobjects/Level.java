@@ -12,9 +12,10 @@ import com.appdav.unknownrunner.gameobjects.characters.Enemy;
 import com.appdav.unknownrunner.gameobjects.characters.MainCharacter;
 import com.appdav.unknownrunner.tools.CollisionHandler;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Level implements GameDrawable, HumanPlayer.GameOverCallback {
+public abstract class Level implements GameDrawable, MainCharacter.GameOverCallback {
 
     protected List<GameDrawable> drawables;
     protected List<Collidable> collidables;
@@ -48,25 +49,27 @@ public abstract class Level implements GameDrawable, HumanPlayer.GameOverCallbac
 
     @Override
     public void drawObject(Canvas canvas, Paint paint) {
+        if (isDestroyed) return;
         for (GameDrawable drawable : drawables) {
             drawable.drawObject(canvas, paint);
         }
     }
 
     private void checkIfDrawablesValid() {
-        for (int i = 0; i < drawables.size(); i++) {
+        if (drawables == null || drawables.size() == 0) return;
+        for (int i = 0; i < (drawables != null ? drawables.size() : 0); i++) {
             GameDrawable drawable = drawables.get(i);
-            if (drawable.isDestroyed()) {
+            if (drawable != null && drawable.isDestroyed()) {
                 if (drawable instanceof Collidable) {
                     collidables.remove(drawable);
                 }
                 if (drawable instanceof Enemy) {
                     enemies.remove(drawable);
                 }
-                if (drawable instanceof MainCharacter){
+                if (drawable instanceof MainCharacter) {
                     endGame();
                 }
-                drawables.remove(drawable);
+                if (drawables != null) drawables.remove(drawable);
             }
         }
     }
@@ -74,20 +77,28 @@ public abstract class Level implements GameDrawable, HumanPlayer.GameOverCallbac
 
     @Override
     public void update() {
+        if (isDestroyed) return;
         checkIfDrawablesValid();
-        List<Collidable> platforms = ground.getCollidables();
-        collidables.addAll(platforms);
-        int size = collidables.size();
-        if (size > 1) {
-            for (int i = 0; i < size; i++) {
-                for (int j = i + 1; j < size; j++) {
-                    CollisionHandler.handleCollision(collidables.get(i), collidables.get(j));
+        List<Collidable> platforms = null;
+        if (ground != null) {
+            platforms = ground.getCollidables();
+            collidables.addAll(platforms);
+        }
+        if (collidables != null) {
+            int size = collidables.size();
+            if (size > 1) {
+                for (int i = 0; i < size; i++) {
+                    for (int j = i + 1; j < size; j++) {
+                        CollisionHandler.handleCollision(collidables.get(i), collidables.get(j));
+                    }
                 }
             }
+            if (platforms != null) collidables.removeAll(platforms);
         }
-        collidables.removeAll(platforms);
-        for (GameDrawable drawable : drawables) {
-            drawable.update();
+        if (drawables != null) {
+            for (GameDrawable drawable : drawables) {
+                drawable.update();
+            }
         }
     }
 
@@ -108,13 +119,19 @@ public abstract class Level implements GameDrawable, HumanPlayer.GameOverCallbac
 
     @Override
     public void destroy() {
+        if (drawables != null) {
+            for (GameDrawable drawable : drawables) {
+                drawable.destroy();
+            }
+        }
         drawables = null;
         collidables = null;
         enemies = null;
+        if (player != null)
+            player.releasePlayer();
         player = null;
         ground = null;
         groundGenerator = null;
-        res = null;
         isDestroyed = true;
     }
 

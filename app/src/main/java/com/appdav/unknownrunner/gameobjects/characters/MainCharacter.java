@@ -7,6 +7,7 @@ import com.appdav.unknownrunner.Speed;
 import com.appdav.unknownrunner.gameobjects.Collision;
 import com.appdav.unknownrunner.gameobjects.GameObject;
 import com.appdav.unknownrunner.gameobjects.Player;
+import com.appdav.unknownrunner.gameobjects.ai.FallAi;
 import com.appdav.unknownrunner.gameobjects.ai.HumanPlayer;
 import com.appdav.unknownrunner.gameobjects.platform.Platform;
 import com.appdav.unknownrunner.tools.CollisionHandler;
@@ -21,39 +22,38 @@ public class MainCharacter extends Character implements GameObject.Callback {
     private static FrameManager walkFrameManager;
     private static FrameManager castingFrameManager;
     private static FrameManager dyingFrameManager;
+    private static FrameManager deadFrameManager;
 
     private static final int JUMP_HEIGHT = 300;
     private static final int initialPosition = Screen.screenWidth / 3;
 
+    private GameOverCallback callback;
 
-    private HumanPlayer player;
-
-    public MainCharacter(Resources res, Speed speed) {
+    public MainCharacter(Resources res, Speed speed, GameOverCallback callback) {
         super(res, speed, 6);
         createSecondaryFrameManagers();
         this.extraSpeed = -speed.speed / 2;
         thresholdTop = thresholdBottom = height / 4;
         thresholdLeft = thresholdRight = width / 4;
-    }
-
-    @Override
-    public void attachPlayer(Player player) {
-        super.attachPlayer(player);
-        if (player instanceof HumanPlayer) {
-            this.player = (HumanPlayer) player;
-        }
+        this.callback = callback;
     }
 
     private void die() {
         currentFrameManager = dyingFrameManager;
-        collisions = null;
-        nextMoves = null;
-        player.die();
+        if (!dyingFrameManager.hasCallback()) dyingFrameManager.attachCallback(this);
+        attachPlayer(new FallAi(this));
+        callback.gameOver();
+    }
+
+    @Override
+    public void update() {
+        if (isDestroyed) callback.endGame();
+        super.update();
     }
 
     @Override
     void onUpdateBeforeCollisionHandling() {
-        if (x < -Screen.screenWidth / 2 || y + height / 2 >  Screen.screenHeight) {
+        if (x < -Screen.screenWidth / 2 || y + height / 2 > Screen.screenHeight) {
             die();
             return;
         } else if (x < initialPosition) {
@@ -81,6 +81,12 @@ public class MainCharacter extends Character implements GameObject.Callback {
 
     @Override
     void onUpdateAfterCollisionHandling() {
+        if (this.player instanceof FallAi) {
+            if (nextMoves == null || nextMoves.isEmpty()) {
+                callback.endGame();
+                return;
+            }
+        }
         if (nextMoves == null) return;
         if (isJumping) {
             nextMoves.remove(Move.FALL);
@@ -110,6 +116,9 @@ public class MainCharacter extends Character implements GameObject.Callback {
         }
         if (dyingFrameManager == null) {
             dyingFrameManager = createDyingFrameManager();
+        }
+        if (deadFrameManager == null) {
+            deadFrameManager = createDeadFrameManager();
         }
     }
 
@@ -158,6 +167,7 @@ public class MainCharacter extends Character implements GameObject.Callback {
     }
 
     private FrameManager createDyingFrameManager() {
+        if (dyingFrameManager != null) return dyingFrameManager;
         List<Integer> resIds = new ArrayList<>();
         resIds.add(R.drawable.wraith_03_dying_000);
         resIds.add(R.drawable.wraith_03_dying_001);
@@ -177,13 +187,22 @@ public class MainCharacter extends Character implements GameObject.Callback {
         return createFrameManager(resIds, this);
     }
 
+    private FrameManager createDeadFrameManager() {
+        if (deadFrameManager != null) return deadFrameManager;
+        return createFrameManager(R.drawable.wraith_03_dying_014);
+    }
+
     @Override
     public void onLastFrameShown(FrameManager manager) {
         if (manager == dyingFrameManager) {
-            player.endGame();
-            player = null;
-            destroy();
+            currentFrameManager = deadFrameManager;
         }
-        //TODO
+    }
+
+    public interface GameOverCallback {
+
+        void gameOver();
+
+        void endGame();
     }
 }

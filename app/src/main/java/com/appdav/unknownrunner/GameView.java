@@ -3,6 +3,7 @@ package com.appdav.unknownrunner;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -15,7 +16,7 @@ import com.appdav.unknownrunner.gameobjects.Player;
 import com.appdav.unknownrunner.gameobjects.ai.HumanPlayer;
 import com.appdav.unknownrunner.tools.Screen;
 
-public class GameView extends SurfaceView implements SurfaceHolder.Callback {
+public class GameView extends SurfaceView implements SurfaceHolder.Callback, Level.StopThreadListener {
 
     private GameThread thread;
     private GameDrawable currentLevel;
@@ -23,15 +24,35 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     private Controller controller;
 
+    private boolean isRunning;
+
+    private boolean isInitialized = false;
+
+
     public GameView(Context context) {
         super(context);
+        init();
+    }
+
+    public GameView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
+
+    public GameView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+
+    private void init() {
         getHolder().addCallback(this);
-        Level level = new MountainLevel(getResources(), this::stopThread);
+        Level level = new MountainLevel(getResources(), this);
         this.currentLevel = level;
         this.controller = level.getController();
-        thread = new GameThread(getHolder(), this);
         this.paint = new Paint();
         setFocusable(true);
+        isInitialized = true;
     }
 
     public GameDrawable getLevel() {
@@ -40,13 +61,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        thread.setRunning(true);
-        thread.start();
+        startThread();
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
     }
 
     @Override
@@ -55,26 +74,44 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         currentLevel.drawObject(canvas, paint);
     }
 
-    private void stopThread() {
-        currentLevel.destroy();
-        currentLevel = null;
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public void stopThread() {
         controller = null;
-        boolean retry = true;
-        while (retry) {
-            try {
-                thread.setRunning(false);
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            retry = false;
+        if (thread != null) {
+            thread.setRunning(false);
         }
+        isInitialized = false;
+    }
+
+    public void startThread() {
+        if (!isInitialized) init();
+        thread = new GameThread(getHolder(), this);
+        isRunning = true;
+        thread.setRunning(true);
+        thread.start();
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        stopThread();
+        destroy();
     }
+
+    public void destroy() {
+        if (isRunning) stopThread();
+        controller = null;
+        isInitialized = false;
+        if (currentLevel != null) {
+            if (!currentLevel.isDestroyed()) {
+                currentLevel.destroy();
+                currentLevel = null;
+            }
+        }
+        getHolder().removeCallback(this);
+    }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -92,5 +129,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 break;
         }
         return true;
+    }
+
+
+    public void restart() {
+        this.currentLevel = new MountainLevel(getResources(), this);
+    }
+
+
+    @Override
+    public void onThreadShouldBeStopped() {
+        stopThread();
     }
 }

@@ -145,6 +145,8 @@ public abstract class Character extends GameObject implements Playable, Collidab
         return collisionRect;
     }
 
+
+
     protected static class JumpInterpolator {
 
         private static final int MAX_SPEED = 70;

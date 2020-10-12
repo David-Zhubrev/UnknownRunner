@@ -9,10 +9,12 @@ import com.appdav.unknownrunner.tools.Tools;
 
 public class GameThread extends Thread {
 
-    private final SurfaceHolder surfaceHolder;
-    private final GameView gameView;
+    private SurfaceHolder surfaceHolder;
+    private GameView gameView;
     private GameDrawable currentLevel;
     private boolean isRunning = false;
+
+    private final static int WAIT_TIME_LIMIT = 1000;
 
     private static final int targetFps = Tools.Fps.getTargetFps();
 
@@ -20,7 +22,7 @@ public class GameThread extends Thread {
         isRunning = running;
     }
 
-    public GameThread(SurfaceHolder holder, GameView gameView){
+    public GameThread(SurfaceHolder holder, GameView gameView) {
         this.surfaceHolder = holder;
         this.gameView = gameView;
         this.currentLevel = gameView.getLevel();
@@ -34,29 +36,20 @@ public class GameThread extends Thread {
         long totalTime = 0;
         int frameCount = 0;
         long targetTime = 1000 / targetFps;
-        while (isRunning) {
+        while (isRunning && currentLevel != null && !currentLevel.isDestroyed()) {
+            if (surfaceHolder == null || !surfaceHolder.getSurface().isValid()) continue;
             startTime = System.nanoTime();
-            Canvas canvas = null;
-            try {
-                canvas = surfaceHolder.lockCanvas();
-                synchronized (surfaceHolder){
-                    currentLevel.update();
-                    gameView.draw(canvas);
-                }
-            } catch (Exception e){
-                e.printStackTrace();
-            } finally {
-                if (canvas != null){
-                    try {
-                        surfaceHolder.unlockCanvasAndPost(canvas);
-                    } catch (Exception e){
-                        e.printStackTrace();
-                    }
-                }
-            }
+            Canvas canvas = surfaceHolder.lockCanvas();
+            if (canvas == null) continue;
+            if (currentLevel == null || currentLevel.isDestroyed()) break;
+            currentLevel.update();
+            if (gameView == null) break;
+            gameView.draw(canvas);
+            surfaceHolder.unlockCanvasAndPost(canvas);
             drawTime = (System.nanoTime() - startTime) / 1_000_000;
             waitTime = targetTime - drawTime;
-            if (waitTime > 0){
+            if (waitTime > WAIT_TIME_LIMIT) continue;
+            if (waitTime > 0) {
                 try {
                     sleep(waitTime);
                 } catch (InterruptedException e) {
@@ -71,7 +64,7 @@ public class GameThread extends Thread {
 //                totalTime = 0;
 //                Tools.Fps.setAverageFps(averageFps);
 //            }
-            if (totalTime >= 1_000_000_000){
+            if (totalTime >= 1_000_000_000) {
                 Tools.Fps.setCurrentFps(frameCount);
                 frameCount = 0;
                 totalTime = 0;
@@ -81,4 +74,5 @@ public class GameThread extends Thread {
         }
 
     }
+
 }

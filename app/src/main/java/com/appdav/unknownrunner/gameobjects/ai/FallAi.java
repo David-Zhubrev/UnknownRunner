@@ -1,15 +1,14 @@
 package com.appdav.unknownrunner.gameobjects.ai;
 
-import com.appdav.unknownrunner.gameobjects.Controller;
 import com.appdav.unknownrunner.gameobjects.Move;
 import com.appdav.unknownrunner.gameobjects.Playable;
 import com.appdav.unknownrunner.gameobjects.Player;
 
-public class HumanPlayer implements Player, Controller {
+public class FallAi implements Player {
 
     private Playable character;
 
-    public HumanPlayer(Playable character){
+    public FallAi(Playable character) {
         this.character = character;
     }
 
@@ -22,19 +21,4 @@ public class HumanPlayer implements Player, Controller {
     public void releasePlayer() {
         this.character = null;
     }
-
-
-    @Override
-    public void onLeftSideClick() {
-        if (character != null)
-        character.move(Move.SHOOT);
-    }
-
-    @Override
-    public void onRightSideClick() {
-        if (character != null)
-        character.move(Move.JUMP);
-    }
-
-
 }

@@ -17,6 +17,7 @@ public class MountainLevel extends Level {
 
     public MountainLevel(Resources res, StopThreadListener listener) {
         super(res, speed, listener);
+        speed = new Speed(15);
 
     }
 
@@ -32,8 +33,8 @@ public class MountainLevel extends Level {
         this.ground = new Ground(res, speed);
         drawables.add(ground);
 
-        MainCharacter character = new MainCharacter(res, speed);
-        this.player = new HumanPlayer(character, this);
+        MainCharacter character = new MainCharacter(res, speed, this);
+        this.player = new HumanPlayer(character);
         character.attachPlayer(player);
         drawables.add(character);
         collidables.add(character);
@@ -51,7 +52,7 @@ public class MountainLevel extends Level {
     }
 
     private void checkGolems() {
-        if (enemies.isEmpty()) {
+        if (!isDestroyed() && enemies.isEmpty()) {
             addGolem();
         }
     }

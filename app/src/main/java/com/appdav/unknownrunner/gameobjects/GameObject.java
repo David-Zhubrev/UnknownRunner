@@ -151,6 +151,9 @@ public abstract class GameObject implements GameDrawable {
     public void destroy() {
         currentFrameManager = null;
         if (managers != null) {
+            for (FrameManager manager : managers) {
+                manager.detachCallback();
+            }
             managers = null;
         }
         isDestroyed = true;
@@ -184,15 +187,15 @@ public abstract class GameObject implements GameDrawable {
             this.callback = callback;
         }
 
-        public void attachCallback(Callback callback){
+        public void attachCallback(Callback callback) {
             this.callback = callback;
         }
 
-        public boolean hasCallback(){
+        public boolean hasCallback() {
             return this.callback != null;
         }
 
-        public void detachCallback(){
+        public void detachCallback() {
             this.callback = null;
         }
 
@@ -209,7 +212,6 @@ public abstract class GameObject implements GameDrawable {
     public interface Callback {
         void onLastFrameShown(FrameManager manager);
     }
-
 
 
 }

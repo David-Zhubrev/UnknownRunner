@@ -31,7 +31,7 @@ public class CollisionHandler {
             int width = abs(intersection.left - intersection.right);
             int height = abs(intersection.top - intersection.bottom);
             int bHeight = abs(b.top - b.bottom);
-            result = (width > height || height < bHeight / 6 ) ?
+            result = (width > height || height < bHeight / 3 ) ?
                     vertical : horizontal;
             collidable1.onCollisionWith(new Collision(collidable2, result));
             collidable2.onCollisionWith(new Collision(collidable1, result));
