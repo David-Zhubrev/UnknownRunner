@@ -12,6 +12,8 @@ import com.appdav.unknownrunner.gameobjects.Move;
 import com.appdav.unknownrunner.gameobjects.platform.Platform;
 import com.appdav.unknownrunner.gameobjects.Playable;
 import com.appdav.unknownrunner.gameobjects.Player;
+import com.appdav.unknownrunner.tools.Screen;
+import com.appdav.unknownrunner.tools.Tools;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +24,13 @@ public abstract class Character extends GameObject implements Playable, Collidab
     protected List<Move> nextMoves;
     protected List<Collision> collisions;
     protected Speed speed;
+
+    protected float currentVerticalSpeed = 0;
     protected Player player;
     protected int thresholdTop = 0, thresholdBottom = 0, thresholdLeft = 0, thresholdRight = 0;
     protected int extraSpeed = 0;
+
+    protected boolean isJumping = false;
 
     public Character(Resources res, Speed speed, int downScale) {
         super(res, downScale);
@@ -42,7 +48,7 @@ public abstract class Character extends GameObject implements Playable, Collidab
     @Override
     public void destroy() {
         super.destroy();
-        if (player != null){
+        if (player != null) {
             player.releasePlayer();
             detachPlayer();
         }
@@ -51,7 +57,11 @@ public abstract class Character extends GameObject implements Playable, Collidab
     @Override
     public void update() {
         super.update();
-        if (player != null) player.makeMove();
+        if (player != null) {
+            player.makeMove();
+        } else {
+            move(Move.FALL);
+        }
         collisionRect = null;
         onUpdateBeforeCollisionHandling();
         if (collisions != null && nextMoves != null && !collisions.isEmpty()) {
@@ -59,15 +69,22 @@ public abstract class Character extends GameObject implements Playable, Collidab
                 if (collision.source instanceof Platform) {
                     if (collision.position == Position.TOP) {
                         nextMoves.remove(Move.JUMP);
+                        isJumping = false;
                     }
                     if (collision.position == Position.BOTTOM) {
                         nextMoves.remove(Move.FALL);
                     }
                     if (collision.position == Position.LEFT) {
-                        nextMoves.add(Move.MOVE_RIGHT);
+                        nextMoves.remove(Move.JUMP);
+                        isJumping = false;
+                        nextMoves.add(Move.SHIFT_LEFT);
                         nextMoves.remove(Move.MOVE_LEFT);
+                        nextMoves.remove(Move.MOVE_RIGHT);
                     } else if (collision.position == Position.RIGHT) {
-                        nextMoves.add(Move.MOVE_LEFT);
+                        nextMoves.remove(Move.JUMP);
+                        isJumping = false;
+                        nextMoves.add(Move.SHIFT_LEFT);
+                        nextMoves.remove(Move.MOVE_LEFT);
                         nextMoves.remove(Move.MOVE_RIGHT);
                     }
                 }
@@ -81,17 +98,17 @@ public abstract class Character extends GameObject implements Playable, Collidab
                     case MOVE_RIGHT:
                         x += speed.speed + extraSpeed;
                         break;
-                    case MOVE_UP:
-                        y -= speed.speed + extraSpeed;
+                    case SHIFT_LEFT:
+                        x -= speed.speed;
                         break;
-                    case MOVE_DOWN:
-                        y += speed.speed + extraSpeed;
+                    case SHIFT_RIGHT:
+                        x += speed.speed;
                         break;
                     case MOVE_LEFT:
                         x -= speed.speed + extraSpeed;
                         break;
                     case FALL:
-                        y += speed.speed + extraSpeed;
+                        JumpInterpolator.nextMove(this);
                         break;
                 }
             }
@@ -126,5 +143,26 @@ public abstract class Character extends GameObject implements Playable, Collidab
                     x + width - thresholdRight, y + height - thresholdBottom);
         }
         return collisionRect;
+    }
+
+    protected static class JumpInterpolator {
+
+        private static final int MAX_SPEED = 70;
+        private static final int threshold = 30;
+
+        public static void nextMove(Character character) {
+            int g = 10;
+            float time = 1f / 4;
+            character.currentVerticalSpeed += g / 4f;
+            if (character.currentVerticalSpeed < 0 && character.currentVerticalSpeed > threshold) {
+                character.currentVerticalSpeed = 30;
+            }
+            if (character.currentVerticalSpeed >= 0) character.isJumping = false;
+            if (character.currentVerticalSpeed > MAX_SPEED)
+                character.currentVerticalSpeed = MAX_SPEED;
+            character.y += character.currentVerticalSpeed * time;
+
+        }
+
     }
 }

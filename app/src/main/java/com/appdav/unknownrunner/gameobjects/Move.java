@@ -5,8 +5,8 @@ public enum Move {
 
     MOVE_LEFT,
     MOVE_RIGHT,
-    MOVE_UP,
-    MOVE_DOWN,
+    SHIFT_LEFT,
+    SHIFT_RIGHT,
     FALL,
     JUMP,
     SHOOT

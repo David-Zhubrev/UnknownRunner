@@ -8,6 +8,7 @@ import com.appdav.unknownrunner.gameobjects.Collision;
 import com.appdav.unknownrunner.gameobjects.GameObject;
 import com.appdav.unknownrunner.gameobjects.Player;
 import com.appdav.unknownrunner.gameobjects.ai.HumanPlayer;
+import com.appdav.unknownrunner.gameobjects.platform.Platform;
 import com.appdav.unknownrunner.tools.CollisionHandler;
 import com.appdav.unknownrunner.gameobjects.Move;
 import com.appdav.unknownrunner.tools.Screen;
@@ -22,15 +23,15 @@ public class MainCharacter extends Character implements GameObject.Callback {
     private static FrameManager dyingFrameManager;
 
     private static final int JUMP_HEIGHT = 300;
-    private static final int initialPosition = 30;
-    private boolean isJumping = false;
-    private int currentJumpHeight = 0;
+    private static final int initialPosition = Screen.screenWidth / 3;
+
 
     private HumanPlayer player;
 
     public MainCharacter(Resources res, Speed speed) {
         super(res, speed, 6);
         createSecondaryFrameManagers();
+        this.extraSpeed = -speed.speed / 2;
         thresholdTop = thresholdBottom = height / 4;
         thresholdLeft = thresholdRight = width / 4;
     }
@@ -52,11 +53,10 @@ public class MainCharacter extends Character implements GameObject.Callback {
 
     @Override
     void onUpdateBeforeCollisionHandling() {
-        if (x < -Screen.screenWidth / 2 || y + height > Screen.screenHeight){
+        if (x < -Screen.screenWidth / 2 || y + height / 2 >  Screen.screenHeight) {
             die();
             return;
-        }
-        else if (x < initialPosition){
+        } else if (x < initialPosition) {
             nextMoves.add(Move.MOVE_RIGHT);
         }
         if (isJumping) nextMoves.add(Move.JUMP);
@@ -75,25 +75,26 @@ public class MainCharacter extends Character implements GameObject.Callback {
     }
 
     @Override
+    public void onCollisionWith(Collision collision) {
+        super.onCollisionWith(collision);
+    }
+
+    @Override
     void onUpdateAfterCollisionHandling() {
         if (nextMoves == null) return;
         if (isJumping) {
             nextMoves.remove(Move.FALL);
         }
         if (nextMoves.contains(Move.JUMP)) {
-            if (!isJumping) {
-                isJumping = true;
-                currentJumpHeight = 0;
-                y -= speed.speed * 2;
-                currentJumpHeight += speed.speed * 2;
+            if (y <= 0) {
+                isJumping = false;
+                currentVerticalSpeed = 0;
             } else {
-                if (currentJumpHeight < JUMP_HEIGHT) {
-                    y -= speed.speed * 2;
-                    currentJumpHeight += speed.speed * 2;
-                } else {
-                    isJumping = false;
-                    currentJumpHeight = 0;
+                if (!isJumping) {
+                    isJumping = true;
+                    currentVerticalSpeed = -70;
                 }
+                JumpInterpolator.nextMove(this);
             }
         }
     }

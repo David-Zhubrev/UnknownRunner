@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class MountainLevel extends Level {
 
-    private static Speed speed = new Speed(10);
+    private static Speed speed = new Speed(15);
 
     public MountainLevel(Resources res, StopThreadListener listener) {
         super(res, speed, listener);
