@@ -4,6 +4,7 @@ import android.content.res.Resources;
 
 import com.appdav.unknownrunner.Speed;
 import com.appdav.unknownrunner.gameobjects.ai.HumanPlayer;
+import com.appdav.unknownrunner.gameobjects.characters.Enemy;
 import com.appdav.unknownrunner.gameobjects.characters.Golem;
 import com.appdav.unknownrunner.gameobjects.characters.MainCharacter;
 import com.appdav.unknownrunner.gameobjects.collectibles.Collectible;
@@ -17,6 +18,7 @@ public class MountainLevel extends Level {
 
     private static Speed speed = new Speed(15);
     private CollectibleGenerator collectibleGenerator;
+    private EnemyGenerator enemyGenerator;
 
     public MountainLevel(Resources res, UiGameplayCallback listener) {
         super(res, speed, listener);
@@ -44,13 +46,13 @@ public class MountainLevel extends Level {
         collidables.add(character);
 
         this.collectibleGenerator = new CollectibleGenerator(res, speed);
+        enemyGenerator = new EnemyGenerator(res, speed);
+
+        addGolem();
     }
 
     private void addGolem() {
-        Golem golem = new Golem(res, speed);
-        golem.x = Screen.screenWidth;
-        golem.y = Screen.screenHeight / 2;
-
+        Enemy golem = enemyGenerator.nextEnemy(ground.getPlatforms());
         collidables.add(golem);
         enemies.add(golem);
         drawables.add(golem);
@@ -64,8 +66,10 @@ public class MountainLevel extends Level {
     }
 
     private void checkGolems() {
-        if (!isDestroyed() && enemies.isEmpty()) {
-            addGolem();
+        if (enemies != null && enemies.size() < 3) {
+            if (Tools.random.nextInt(30) == 15) {
+                addGolem();
+            }
         }
     }
 
@@ -78,7 +82,7 @@ public class MountainLevel extends Level {
     @Override
     public void update() {
         checkCollectibles();
-        super.update();
         checkGolems();
+        super.update();
     }
 }

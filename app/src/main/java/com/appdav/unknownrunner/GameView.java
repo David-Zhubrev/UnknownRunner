@@ -13,6 +13,7 @@ import com.appdav.unknownrunner.gameobjects.GameDrawable;
 import com.appdav.unknownrunner.gameobjects.Level;
 import com.appdav.unknownrunner.gameobjects.MountainLevel;
 import com.appdav.unknownrunner.tools.OnSwipeTouchListener;
+import com.appdav.unknownrunner.tools.Preferences;
 import com.appdav.unknownrunner.tools.Score;
 import com.appdav.unknownrunner.tools.Screen;
 
@@ -167,11 +168,15 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Lev
 
     @Override
     public void onGameOver() {
+        controller = null;
         stopThread();
         if (callback != null) callback.onGameOverScreenShow();
+
         if (Score.score > Score.highScore) {
             Score.highScore = Score.score;
+            Preferences.writeHighScore(Score.highScore);
         }
+        Score.score = 0;
     }
 
     public interface GameActivityCallback {

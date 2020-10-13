@@ -25,6 +25,8 @@ public abstract class Character extends GameObject implements Playable, Collidab
     protected List<Collision> collisions;
     protected Speed speed;
 
+    protected boolean isDead = false;
+
     protected float currentVerticalSpeed = 0;
     protected Player player;
     protected int thresholdTop = 0, thresholdBottom = 0, thresholdLeft = 0, thresholdRight = 0;
@@ -153,7 +155,7 @@ public abstract class Character extends GameObject implements Playable, Collidab
             float time = 1f / 2.5f;
             character.currentVerticalSpeed += g / 10f;
             if (character.currentVerticalSpeed > 0 && character.currentVerticalSpeed < threshold) {
-                character.currentVerticalSpeed = 30;
+                character.currentVerticalSpeed = threshold;
             }
             if (character.currentVerticalSpeed >= 0) character.isJumping = false;
             if (character.y + character.height > Screen.screenHeight - Screen.screenHeight / 4 && character.currentVerticalSpeed > MAX_SPEED)

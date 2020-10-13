@@ -45,10 +45,12 @@ public class MainCharacter extends Character implements GameObject.Callback {
     }
 
     private void die() {
+        if (isDead) return;
         currentFrameManager = dyingFrameManager;
         dyingFrameManager.attachCallback(this);
         attachPlayer(new FallAi(this));
         callback.gameOver();
+        isDead = true;
     }
 
     @Override
@@ -60,7 +62,7 @@ public class MainCharacter extends Character implements GameObject.Callback {
 
     @Override
     void onUpdateBeforeCollisionHandling() {
-        if (x < -Screen.screenWidth / 2 || y + height / 2 > Screen.screenHeight) {
+        if (x < -Screen.screenWidth / 2 || y + height > Screen.screenHeight) {
             die();
             return;
         } else if (x < initialPosition) {
@@ -80,6 +82,7 @@ public class MainCharacter extends Character implements GameObject.Callback {
                 if (collision.source instanceof Enemy) {
                     if (collision.position == CollisionHandler.Position.BOTTOM) {
                         ((Enemy) collision.source).die();
+                        Score.score += 500;
                         nextMoves.add(Move.JUMP);
                     } else {
                         die();

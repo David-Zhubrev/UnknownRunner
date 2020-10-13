@@ -11,8 +11,6 @@ import com.appdav.unknownrunner.tools.Screen;
 
 public abstract class Enemy extends Character {
 
-    protected boolean isAlive = true;
-
     public Enemy(Resources res, Speed speed, int downScale) {
         super(res, speed, downScale);
     }

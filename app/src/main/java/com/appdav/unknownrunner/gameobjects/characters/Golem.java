@@ -26,8 +26,8 @@ public class Golem extends Enemy implements GameObject.Callback {
 
     public Golem(Resources res, Speed speed) {
         super(res, speed, GOLEM_DOWNSCALE);
-        this.thresholdTop = thresholdBottom = height / 6;
-        this.thresholdLeft = thresholdRight = width / 6;
+        this.thresholdTop = thresholdBottom = height / 5;
+        this.thresholdLeft = thresholdRight = width / 10;
         extraSpeed = GOLEM_SPEED;
         attachPlayer(new GolemAi(this));
         createSecondaryFrameManagers();
@@ -74,14 +74,35 @@ public class Golem extends Enemy implements GameObject.Callback {
     @Override
     public void destroy() {
         super.destroy();
-        if (dieFrameManager.hasCallback()) {
+        if (dieFrameManager.hasCallback())
             dieFrameManager.detachCallback();
-        }
     }
 
     private FrameManager createWinFrameManager() {
-        return null;
-        //return currentFrameManager;
+        if (winFrameManager != null)
+            return winFrameManager;
+
+        List<Integer> resIds = new ArrayList<>();
+        resIds.add(R.drawable.golem1_idle_blinking_000);
+        resIds.add(R.drawable.golem1_idle_blinking_001);
+        resIds.add(R.drawable.golem1_idle_blinking_002);
+        resIds.add(R.drawable.golem1_idle_blinking_003);
+        resIds.add(R.drawable.golem1_idle_blinking_004);
+        resIds.add(R.drawable.golem1_idle_blinking_005);
+        resIds.add(R.drawable.golem1_idle_blinking_006);
+        resIds.add(R.drawable.golem1_idle_blinking_007);
+        resIds.add(R.drawable.golem1_idle_blinking_008);
+        resIds.add(R.drawable.golem1_idle_blinking_009);
+        resIds.add(R.drawable.golem1_idle_blinking_010);
+        resIds.add(R.drawable.golem1_idle_blinking_011);
+        resIds.add(R.drawable.golem1_idle_blinking_012);
+        resIds.add(R.drawable.golem1_idle_blinking_013);
+        resIds.add(R.drawable.golem1_idle_blinking_014);
+        resIds.add(R.drawable.golem1_idle_blinking_015);
+        resIds.add(R.drawable.golem1_idle_blinking_016);
+        resIds.add(R.drawable.golem1_idle_blinking_017);
+        winFrameManager = createFrameManager(resIds, null, true);
+        return winFrameManager;
     }
 
     private FrameManager createDieFrameManager() {
@@ -123,8 +144,10 @@ public class Golem extends Enemy implements GameObject.Callback {
 
     @Override
     public void die() {
-        isAlive = false;
+        if (isDead) return;
+        isDead = true;
         currentFrameManager = dieFrameManager;
+        dieFrameManager.attachCallback(this);
         collisions = null;
         nextMoves = null;
         this.speed = Speed.zero;
@@ -136,7 +159,7 @@ public class Golem extends Enemy implements GameObject.Callback {
 
     @Override
     void onUpdateAfterCollisionHandling() {
-        if (!isAlive) return;
+        if (isDead) return;
         if (nextMoves != null && nextMoves.contains(Move.FALL))
             currentFrameManager = fallFrameManager;
         else currentFrameManager = walkFrameManager;
