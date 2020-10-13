@@ -1,13 +1,11 @@
 package com.appdav.unknownrunner.gameobjects.ai;
 
-import com.appdav.unknownrunner.gameobjects.platform.Platform;
 import com.appdav.unknownrunner.tools.Screen;
 import com.appdav.unknownrunner.tools.Tools;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.regex.Pattern;
 
 public class GroundGenerator {
 
@@ -36,10 +34,6 @@ public class GroundGenerator {
     public GroundGenerationPattern nextPattern(int fromX, int blockWidth) {
         int count = (fromX + length) / blockWidth;
         List<PlatformType> result = new ArrayList<>();
-        PlatformType last;
-        if (previousPattern != null) {
-            last = previousPattern.getLastType();
-        } else last = PlatformType.GROUND;
         int bound = 1;
         int latency = 0;
         int currentLength = 0;
@@ -113,22 +107,17 @@ public class GroundGenerator {
     }
 
 
-    public class GroundGenerationPattern {
+    public static class GroundGenerationPattern {
 
         private final List<PlatformType> platformTypes;
-        private final int size;
 
         GroundGenerationPattern(List<PlatformType> types) {
             this.platformTypes = types;
-            this.size = types.size();
         }
 
         public List<PlatformType> getPlatformTypes() {
             return platformTypes;
         }
 
-        public PlatformType getLastType() {
-            return platformTypes.get(size - 1);
-        }
     }
 }

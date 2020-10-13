@@ -4,8 +4,9 @@ import android.content.res.Resources;
 
 import com.appdav.unknownrunner.R;
 import com.appdav.unknownrunner.Speed;
+import com.appdav.unknownrunner.gameobjects.bitmapholders.PlatformBitmaps;
 
-public class RightEdgePlatform extends Platform{
+public class RightEdgePlatform extends Platform {
 
 
     public RightEdgePlatform(Resources res, Speed speed) {
@@ -15,6 +16,6 @@ public class RightEdgePlatform extends Platform{
 
     @Override
     protected FrameManager createMainFrameManager() {
-        return createFrameManager(R.drawable.tile_right_edge);
+        return createFrameManager(PlatformBitmaps.getRightEdgeFrames(getResources()), null);
     }
 }

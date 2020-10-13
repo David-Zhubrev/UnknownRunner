@@ -7,7 +7,6 @@ import com.appdav.unknownrunner.gameobjects.Collision;
 import com.appdav.unknownrunner.gameobjects.Move;
 import com.appdav.unknownrunner.gameobjects.platform.Platform;
 import com.appdav.unknownrunner.tools.CollisionHandler;
-import com.appdav.unknownrunner.tools.Screen;
 
 public abstract class Enemy extends Character {
 
@@ -18,14 +17,9 @@ public abstract class Enemy extends Character {
     @Override
     void onUpdateBeforeCollisionHandling() {
         if (isJumping) nextMoves.add(Move.JUMP);
-        for (Collision collision : collisions) {
-            if (collision.source instanceof Projectile) {
-                die();
-            }
-        }
-        if (collisions != null){
-            for (Collision c : collisions){
-                if (c.source instanceof Platform && c.position == CollisionHandler.Position.LEFT){
+        if (collisions != null) {
+            for (Collision c : collisions) {
+                if (c.source instanceof Platform && c.position == CollisionHandler.Position.LEFT) {
                     nextMoves.add(Move.JUMP);
                 }
             }

@@ -26,7 +26,7 @@ public class Ground implements GameDrawable {
 
     private boolean isDestroyed = false;
 
-    private int platformWidth, platformHeight;
+    private int platformWidth;
 
     private int ground_level_low;
     private int ground_level_high;
@@ -122,7 +122,7 @@ public class Ground implements GameDrawable {
         if (platformWidth == 0) {
             Platform platform = new GroundPlatform(res, speed);
             platformWidth = platform.width;
-            platformHeight = platform.height;
+            int platformHeight = platform.height;
             ground_level_low = Screen.screenHeight - platformHeight;
             ground_level_high = Screen.screenHeight - platformHeight * 3;
             platform.destroy();

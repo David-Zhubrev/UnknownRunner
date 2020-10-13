@@ -62,10 +62,17 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
     }
 
 
-    public interface Callback{
-        default void onSwipeBottom(){};
-        default void onSwipeTop(){};
-        default void onSwipeLeft(){};
-        default void onSwipeRight(){};
+    public interface Callback {
+        default void onSwipeBottom() {
+        }
+
+        default void onSwipeTop() {
+        }
+
+        default void onSwipeLeft() {
+        }
+
+        default void onSwipeRight() {
+        }
     }
 }

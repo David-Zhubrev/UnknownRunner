@@ -34,7 +34,7 @@ public class GameActivity extends AppCompatActivity implements Dialogs.DialogCal
         gameView.attachCallback(this);
     }
 
-    private String createScoreText(){
+    private String createScoreText() {
         return "Score: " + Score.score;
     }
 

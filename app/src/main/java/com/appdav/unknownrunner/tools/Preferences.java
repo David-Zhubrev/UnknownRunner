@@ -8,7 +8,7 @@ public class Preferences {
     private static final String key = "highscore";
     public static final String PREF_NAME = "pref";
 
-    public static void setupPreferences(SharedPreferences preferences){
+    public static void setupPreferences(SharedPreferences preferences) {
         mPreferences = preferences;
     }
 

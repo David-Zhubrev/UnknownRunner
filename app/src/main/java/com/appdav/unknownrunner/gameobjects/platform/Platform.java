@@ -3,17 +3,14 @@ package com.appdav.unknownrunner.gameobjects.platform;
 import android.content.res.Resources;
 import android.graphics.Rect;
 
-import com.appdav.unknownrunner.R;
 import com.appdav.unknownrunner.Speed;
 import com.appdav.unknownrunner.gameobjects.Collidable;
 import com.appdav.unknownrunner.gameobjects.Collision;
 import com.appdav.unknownrunner.gameobjects.GameObject;
-import com.appdav.unknownrunner.tools.Screen;
 import com.appdav.unknownrunner.tools.Tools;
 
-import java.util.List;
 
-public class Platform extends GameObject implements Collidable {
+public abstract class Platform extends GameObject implements Collidable {
 
     protected final Speed speed;
     protected Rect collisionRect;
@@ -22,11 +19,6 @@ public class Platform extends GameObject implements Collidable {
         super(res, 1);
         this.speed = speed;
         Tools.blockHeight = this.height;
-    }
-
-    @Override
-    protected FrameManager createMainFrameManager() {
-        return createFrameManager(R.drawable.tile28, null);
     }
 
     @Override
@@ -40,9 +32,9 @@ public class Platform extends GameObject implements Collidable {
     }
 
 
-
     @Override
-    public void onCollisionWith(Collision collision) {}
+    public void onCollisionWith(Collision collision) {
+    }
 
     @Override
     public Rect getCollisionRect() {

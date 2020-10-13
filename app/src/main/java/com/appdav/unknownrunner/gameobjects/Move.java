@@ -9,7 +9,6 @@ public enum Move {
     SHIFT_RIGHT,
     FALL,
     JUMP,
-    SHOOT,
     DROP
 
 }

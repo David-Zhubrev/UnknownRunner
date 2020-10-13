@@ -9,7 +9,7 @@ public class HumanPlayer implements Player, Controller {
 
     private Playable character;
 
-    public HumanPlayer(Playable character){
+    public HumanPlayer(Playable character) {
         this.character = character;
     }
 
@@ -23,17 +23,10 @@ public class HumanPlayer implements Player, Controller {
         this.character = null;
     }
 
-
     @Override
-    public void onLeftSideClick() {
+    public void onClick() {
         if (character != null)
-        character.move(Move.SHOOT);
-    }
-
-    @Override
-    public void onRightSideClick() {
-        if (character != null)
-        character.move(Move.JUMP);
+            character.move(Move.JUMP);
     }
 
     @Override

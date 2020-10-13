@@ -6,7 +6,11 @@
     <string name="GameOver">Game over</string>
     <string name="Restart">Restart</string>
     <string name="Pause">Pause</string>
-    <string name="Loading">Loading...</string>
+    <string name="Loading">Loading…</string>
 
     <string name="HighScore">High score: </string>
+
+    <string name="hint">How to play</string>
+    <string name="hintText">Tap screen to jump\nSwipe down to drop faster\nJump on enemies to bring justice\nCollect flying gems to get more scores\nEnjoy!</string>
+    <string name="back">Back</string>
 </resources>

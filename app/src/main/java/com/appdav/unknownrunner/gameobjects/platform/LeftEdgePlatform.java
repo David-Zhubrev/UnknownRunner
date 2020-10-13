@@ -2,8 +2,8 @@ package com.appdav.unknownrunner.gameobjects.platform;
 
 import android.content.res.Resources;
 
-import com.appdav.unknownrunner.R;
 import com.appdav.unknownrunner.Speed;
+import com.appdav.unknownrunner.gameobjects.bitmapholders.PlatformBitmaps;
 
 public class LeftEdgePlatform extends Platform {
 
@@ -13,6 +13,6 @@ public class LeftEdgePlatform extends Platform {
 
     @Override
     protected FrameManager createMainFrameManager() {
-        return createFrameManager(R.drawable.tile_left_edge);
+        return createFrameManager(PlatformBitmaps.getLeftEdgeFrames(getResources()), null);
     }
 }

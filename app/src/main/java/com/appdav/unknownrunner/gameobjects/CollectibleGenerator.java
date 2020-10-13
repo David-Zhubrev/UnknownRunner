@@ -7,13 +7,9 @@ import com.appdav.unknownrunner.gameobjects.collectibles.BlueGem;
 import com.appdav.unknownrunner.gameobjects.collectibles.Collectible;
 import com.appdav.unknownrunner.gameobjects.collectibles.GreenGem;
 import com.appdav.unknownrunner.gameobjects.collectibles.RedGem;
-import com.appdav.unknownrunner.gameobjects.platform.GapPlatform;
-import com.appdav.unknownrunner.gameobjects.platform.Platform;
 import com.appdav.unknownrunner.tools.Screen;
 import com.appdav.unknownrunner.tools.Tools;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class CollectibleGenerator {
@@ -29,24 +25,29 @@ public class CollectibleGenerator {
     }
 
     public Collectible nextCollectible() {
-        Collectible c;
-        switch (random.nextInt(5)) {
-            case 0:
-            case 1:
-                c = new RedGem(res, speed);
-                break;
-            case 2:
-            case 3:
-                c = new BlueGem(res, speed);
-                break;
-            default:
-                c = new GreenGem(res, speed);
-                break;
-        }
+        int initialY = Screen.screenHeight / 3 + random.nextInt(Screen.screenHeight / 3);
+        Collectible c = chooseCollectible();
         c.x = Screen.screenWidth;
-        c.y = random.nextInt(Screen.screenHeight - Tools.blockHeight);
+        c.y = initialY;
         return c;
     }
+
+    private Collectible chooseCollectible() {
+        switch (random.nextInt(6)) {
+            case 0:
+            case 1:
+            case 2:
+                return new RedGem(res, speed);
+            case 3:
+            case 4:
+                return new BlueGem(res, speed);
+            case 5:
+            default:
+                return new GreenGem(res, speed);
+        }
+    }
+
+
 }
 
 

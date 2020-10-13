@@ -3,8 +3,8 @@ package com.appdav.unknownrunner.gameobjects.platform;
 import android.content.res.Resources;
 import android.graphics.Rect;
 
-import com.appdav.unknownrunner.R;
 import com.appdav.unknownrunner.Speed;
+import com.appdav.unknownrunner.gameobjects.bitmapholders.PlatformBitmaps;
 
 public class GapPlatform extends Platform {
 
@@ -14,7 +14,7 @@ public class GapPlatform extends Platform {
 
     @Override
     protected FrameManager createMainFrameManager() {
-        return createFrameManager(R.drawable.gap);
+        return createFrameManager(PlatformBitmaps.getGapFrames(getResources()), null);
     }
 
     @Override

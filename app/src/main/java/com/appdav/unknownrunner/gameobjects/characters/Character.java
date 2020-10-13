@@ -13,7 +13,6 @@ import com.appdav.unknownrunner.gameobjects.platform.Platform;
 import com.appdav.unknownrunner.gameobjects.Playable;
 import com.appdav.unknownrunner.gameobjects.Player;
 import com.appdav.unknownrunner.tools.Screen;
-import com.appdav.unknownrunner.tools.Tools;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -137,6 +136,7 @@ public abstract class Character extends GameObject implements Playable, Collidab
 
     @Override
     public Rect getCollisionRect() {
+        if (isDead) return null;
         if (collisionRect == null) {
             collisionRect = new Rect(x + thresholdLeft, y + thresholdTop,
                     x + width - thresholdRight, y + height - thresholdBottom);
@@ -160,7 +160,6 @@ public abstract class Character extends GameObject implements Playable, Collidab
             if (character.currentVerticalSpeed >= 0) character.isJumping = false;
             if (character.y + character.height > Screen.screenHeight - Screen.screenHeight / 4 && character.currentVerticalSpeed > MAX_SPEED)
                 character.currentVerticalSpeed = MAX_SPEED;
-            int y = (int) (character.y + character.currentVerticalSpeed * time);
             character.y += character.currentVerticalSpeed * time;
         }
 

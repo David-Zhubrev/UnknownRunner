@@ -2,8 +2,8 @@ package com.appdav.unknownrunner.gameobjects.platform;
 
 import android.content.res.Resources;
 
-import com.appdav.unknownrunner.R;
 import com.appdav.unknownrunner.Speed;
+import com.appdav.unknownrunner.gameobjects.bitmapholders.PlatformBitmaps;
 
 public class GroundPlatform extends Platform {
 
@@ -13,6 +13,6 @@ public class GroundPlatform extends Platform {
 
     @Override
     protected FrameManager createMainFrameManager() {
-        return createFrameManager(R.drawable.tile28);
+        return createFrameManager(PlatformBitmaps.getGroundEdgeFrames(getResources()), null);
     }
 }

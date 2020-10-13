@@ -2,13 +2,10 @@ package com.appdav.unknownrunner.gameobjects.collectibles;
 
 import android.content.res.Resources;
 
-import com.appdav.unknownrunner.R;
 import com.appdav.unknownrunner.Speed;
-import com.appdav.unknownrunner.gameobjects.collectibles.Collectible;
+import com.appdav.unknownrunner.gameobjects.bitmapholders.GemBitmaps;
 
 public class GreenGem extends Collectible {
-
-    private FrameManager mainFrameManager;
 
     public GreenGem(Resources res, Speed levelSpeed) {
         super(res, 10, levelSpeed);
@@ -17,12 +14,7 @@ public class GreenGem extends Collectible {
 
     @Override
     protected FrameManager createMainFrameManager() {
-        if (mainFrameManager != null) return mainFrameManager;
-        else {
-            mainFrameManager = createFrameManager(R.drawable.green_gem);
-            return mainFrameManager;
-        }
-
+        return createFrameManager(GemBitmaps.getGreenGemFrames(getResources()), null);
     }
 
     @Override

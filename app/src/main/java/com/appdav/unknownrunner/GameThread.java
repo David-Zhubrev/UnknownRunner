@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 
 import com.appdav.unknownrunner.gameobjects.GameDrawable;
-import com.appdav.unknownrunner.gameobjects.Level;
 import com.appdav.unknownrunner.tools.Tools;
 
 public class GameThread extends Thread {
@@ -31,7 +30,7 @@ public class GameThread extends Thread {
         this.callback = callback;
     }
 
-    public int getFrameCount(){
+    public int getFrameCount() {
         return frameCount;
     }
 
@@ -82,7 +81,7 @@ public class GameThread extends Thread {
 
     }
 
-    public interface FrameCallback{
+    public interface FrameCallback {
         void onNextSecond();
     }
 

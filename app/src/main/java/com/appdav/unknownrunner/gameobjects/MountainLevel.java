@@ -5,14 +5,11 @@ import android.content.res.Resources;
 import com.appdav.unknownrunner.Speed;
 import com.appdav.unknownrunner.gameobjects.ai.HumanPlayer;
 import com.appdav.unknownrunner.gameobjects.characters.Enemy;
-import com.appdav.unknownrunner.gameobjects.characters.Golem;
 import com.appdav.unknownrunner.gameobjects.characters.MainCharacter;
 import com.appdav.unknownrunner.gameobjects.collectibles.Collectible;
-import com.appdav.unknownrunner.tools.Screen;
 import com.appdav.unknownrunner.tools.Tools;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MountainLevel extends Level {
 
@@ -74,7 +71,7 @@ public class MountainLevel extends Level {
     }
 
     private void checkCollectibles() {
-        if (Tools.random.nextInt(30) == 12) {
+        if (Tools.random.nextInt(60) == 12) {
             addCollectible();
         }
     }

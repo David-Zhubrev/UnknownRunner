@@ -2,9 +2,9 @@ package com.appdav.unknownrunner;
 
 public class Speed {
 
-    public int speed = 0;
+    public int speed;
 
-    public Speed(int speed){
+    public Speed(int speed) {
         this.speed = speed;
     }
 

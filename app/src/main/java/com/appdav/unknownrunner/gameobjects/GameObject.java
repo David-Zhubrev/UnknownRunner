@@ -2,18 +2,12 @@ package com.appdav.unknownrunner.gameobjects;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.appdav.unknownrunner.tools.Screen;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.appdav.unknownrunner.tools.Screen.*;
@@ -26,16 +20,15 @@ public abstract class GameObject implements GameDrawable {
     protected FrameManager currentFrameManager;
     protected boolean isDestroyed = false;
     private final Resources res;
-    private boolean toScale = false;
     protected final int downScale;
 
     private List<FrameManager> managers;
 
-    public int getWidth(){
+    public int getWidth() {
         return this.width;
     }
 
-    public int getHeight(){
+    public int getHeight() {
         return this.height;
     }
 
@@ -50,91 +43,19 @@ public abstract class GameObject implements GameDrawable {
 
     }
 
-    private void addFrameManagerToList(FrameManager manager) {
-        if (managers == null) managers = new ArrayList<>();
-        managers.add(manager);
-    }
-
     protected abstract FrameManager createMainFrameManager();
 
-    private void setupWidthAndHeight(Bitmap frame) {
-        width = frame.getWidth();
-        height = frame.getHeight();
-        int modificationCounter = 0;
-        if (downScale != 1) {
-            modificationCounter++;
-            width /= downScale;
-            height /= downScale;
-        }
-        if (screenRatioX != 1 && screenRatioY != 1) {
-            modificationCounter++;
-            width = (int) (width * screenRatioX);
-            height = (int) (width * screenRatioY);
-        }
-        if (modificationCounter > 0) {
-            toScale = true;
-        }
+    protected Resources getResources() {
+        return res;
     }
 
-
-    protected FrameManager createFrameManager(List<Integer> resIds, @Nullable Callback callback) {
-        List<Bitmap> frames = new ArrayList<>();
-        for (int resId : resIds) {
-            Bitmap frame = BitmapFactory.decodeResource(res, resId);
-            if (width == 0 || height == 0) {
-                setupWidthAndHeight(frame);
-            }
-            if (toScale) frame = Bitmap.createScaledBitmap(frame, width, height, false);
-            frames.add(frame);
-        }
-        FrameManager result = new FrameManager(frames, callback);
-        result.frameWidth = width;
-        result.frameHeight = height;
-        addFrameManagerToList(result);
-        return result;
+    protected FrameManager createFrameManager(List<Bitmap> bitmaps, @Nullable Callback callback) {
+        return new FrameManager(bitmaps, callback);
     }
 
-    protected FrameManager createFrameManager(@DrawableRes int resId, Callback callback) {
-        Bitmap frame = BitmapFactory.decodeResource(res, resId);
-        if (width == 0 || height == 0) {
-            setupWidthAndHeight(frame);
-        }
-        if (toScale) frame = Bitmap.createScaledBitmap(frame, width, height, false);
-        FrameManager result = new FrameManager(frame, callback);
-        result.frameWidth = width;
-        result.frameHeight = height;
-        addFrameManagerToList(result);
-        return result;
-    }
-
-    protected FrameManager createFrameManager(@DrawableRes int resId) {
-        return createFrameManager(resId, null);
-    }
-
-    protected FrameManager createFrameManager(List<Integer> resIds, boolean toMirror) {
-        return createFrameManager(resIds, null, toMirror);
-    }
-
-
-    protected FrameManager createFrameManager(List<Integer> resIds, @Nullable Callback callback, boolean toMirror) {
-        if (!toMirror) return createFrameManager(resIds, callback);
-        List<Bitmap> frames = new ArrayList<>();
-        Matrix m = new Matrix();
-        m.preScale(-1, 1);
-        for (int resId : resIds) {
-            Bitmap frame = BitmapFactory.decodeResource(res, resId);
-            frame = Bitmap.createBitmap(frame, 0, 0, frame.getWidth(), frame.getHeight(), m, false);
-            if (this.width == 0 || this.height == 0)
-                setupWidthAndHeight(frame);
-            if (toScale) frame = Bitmap.createScaledBitmap(frame, width, height, false);
-            frames.add(frame);
-        }
-        FrameManager result = new FrameManager(frames, callback);
-        result.frameWidth = width;
-        result.frameHeight = height;
-        addFrameManagerToList(result);
-        return result;
-    }
+//    protected FrameManager createFrameManager(Function<Resources, List<Bitmap>> function, @Nullable Callback callback) {
+//        return new FrameManager(function.apply(res), callback);
+//    }
 
     @Override
     public void update() {
@@ -185,19 +106,16 @@ public abstract class GameObject implements GameDrawable {
             this.frames = frames;
             this.lastFrame = frames.size() - 1;
             isDestroyed = false;
-            if (callback != null) this.callback = callback;
+            this.callback = callback;
+            setupWidthAndHeight();
         }
 
-        public FrameManager(@NonNull Bitmap frame, @Nullable Callback callback) {
-            this.frames = new ArrayList<>();
-            frames.add(frame);
-            this.lastFrame = frames.size() - 1;
-            this.callback = callback;
+        private void setupWidthAndHeight() {
+            Bitmap frame = frames.get(0);
+            frameWidth = frame.getWidth();
+            frameHeight = frame.getHeight();
         }
 
-        public void attachCallback(Callback callback) {
-            this.callback = callback;
-        }
 
         public boolean hasCallback() {
             return this.callback != null;

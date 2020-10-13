@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import com.appdav.unknownrunner.R;
 import com.appdav.unknownrunner.Speed;
 import com.appdav.unknownrunner.gameobjects.Collision;
+import com.appdav.unknownrunner.gameobjects.bitmapholders.GemBitmaps;
 
 public class BlueGem extends Collectible {
 
@@ -22,9 +23,7 @@ public class BlueGem extends Collectible {
     @Override
     protected FrameManager createMainFrameManager() {
         if (mainFrameManager != null) return mainFrameManager;
-        else {
-            mainFrameManager = createFrameManager(R.drawable.blue_gem);
-            return mainFrameManager;
-        }
+        mainFrameManager = createFrameManager(GemBitmaps.getBlueGemFrames(getResources()), null);
+        return mainFrameManager;
     }
 }

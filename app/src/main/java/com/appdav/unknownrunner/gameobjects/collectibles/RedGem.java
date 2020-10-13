@@ -1,15 +1,11 @@
 package com.appdav.unknownrunner.gameobjects.collectibles;
 
 import android.content.res.Resources;
-import android.graphics.Rect;
 
-import com.appdav.unknownrunner.R;
 import com.appdav.unknownrunner.Speed;
-import com.appdav.unknownrunner.gameobjects.Collision;
+import com.appdav.unknownrunner.gameobjects.bitmapholders.GemBitmaps;
 
 public class RedGem extends Collectible {
-
-    private static FrameManager mainFrameManager;
 
     public RedGem(Resources res, Speed levelSpeed) {
         super(res, 10, levelSpeed);
@@ -22,11 +18,8 @@ public class RedGem extends Collectible {
 
     @Override
     protected FrameManager createMainFrameManager() {
-        if (mainFrameManager != null) return mainFrameManager;
-        else {
-            mainFrameManager = createFrameManager(R.drawable.red_gem);
-            return mainFrameManager;
-        }
+        return createFrameManager(GemBitmaps.getRedGemFrames(getResources()), null);
+
 
     }
 }
