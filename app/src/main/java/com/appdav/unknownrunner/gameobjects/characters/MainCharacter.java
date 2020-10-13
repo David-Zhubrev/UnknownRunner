@@ -10,9 +10,11 @@ import com.appdav.unknownrunner.gameobjects.GameObject;
 import com.appdav.unknownrunner.gameobjects.Player;
 import com.appdav.unknownrunner.gameobjects.ai.FallAi;
 import com.appdav.unknownrunner.gameobjects.ai.HumanPlayer;
+import com.appdav.unknownrunner.gameobjects.collectibles.Collectible;
 import com.appdav.unknownrunner.gameobjects.platform.Platform;
 import com.appdav.unknownrunner.tools.CollisionHandler;
 import com.appdav.unknownrunner.gameobjects.Move;
+import com.appdav.unknownrunner.tools.Score;
 import com.appdav.unknownrunner.tools.Screen;
 
 import java.util.ArrayList;
@@ -87,6 +89,9 @@ public class MainCharacter extends Character implements GameObject.Callback {
                         isJumping = false;
                         currentVerticalSpeed = 0;
                     }
+                } else if (collision.source instanceof Collectible){
+                    Score.score += ((Collectible) collision.source).getPrice();
+                    ((Collectible) collision.source).destroy();
                 }
             }
         }

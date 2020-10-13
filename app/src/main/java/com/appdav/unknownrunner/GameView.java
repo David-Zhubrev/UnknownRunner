@@ -13,6 +13,7 @@ import com.appdav.unknownrunner.gameobjects.GameDrawable;
 import com.appdav.unknownrunner.gameobjects.Level;
 import com.appdav.unknownrunner.gameobjects.MountainLevel;
 import com.appdav.unknownrunner.tools.OnSwipeTouchListener;
+import com.appdav.unknownrunner.tools.Score;
 import com.appdav.unknownrunner.tools.Screen;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback, Level.UiGameplayCallback {
@@ -103,16 +104,21 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Lev
     public void startThread() {
         if (!isInitialized) init();
         controller = currentLevel.getController();
-        thread = new GameThread(getHolder(), this);
+        thread = new GameThread(getHolder(), this, this::onNextSecond);
         isRunning = true;
         thread.setRunning(true);
         thread.start();
-        while (true){
-            if (thread.getFrameCount() > 3){
+        while (true) {
+            if (thread.getFrameCount() > 3) {
                 callback.onGameStart();
                 return;
             }
         }
+    }
+
+    private void onNextSecond() {
+        Score.score += 30;
+        callback.onScoreUpdated();
     }
 
     @Override
@@ -156,12 +162,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Lev
     public void restart() {
         this.currentLevel = new MountainLevel(getResources(), this);
         startThread();
+        Score.score = 0;
     }
 
     @Override
     public void onGameOver() {
         stopThread();
         if (callback != null) callback.onGameOverScreenShow();
+        if (Score.score > Score.highScore) {
+            Score.highScore = Score.score;
+        }
     }
 
     public interface GameActivityCallback {
@@ -170,6 +180,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Lev
         void onGameStart();
 
         void onGamePaused();
+
+        void onScoreUpdated();
     }
 
 

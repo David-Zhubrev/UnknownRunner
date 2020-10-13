@@ -14,6 +14,7 @@ public class GameThread extends Thread {
     private GameDrawable currentLevel;
     private boolean isRunning = false;
     private int frameCount = 0;
+    private FrameCallback callback;
 
     private final static int WAIT_TIME_LIMIT = 1000;
 
@@ -23,10 +24,11 @@ public class GameThread extends Thread {
         isRunning = running;
     }
 
-    public GameThread(SurfaceHolder holder, GameView gameView) {
+    public GameThread(SurfaceHolder holder, GameView gameView, FrameCallback callback) {
         this.surfaceHolder = holder;
         this.gameView = gameView;
         this.currentLevel = gameView.getLevel();
+        this.callback = callback;
     }
 
     public int getFrameCount(){
@@ -72,11 +74,16 @@ public class GameThread extends Thread {
                 Tools.Fps.setCurrentFps(frameCount);
                 frameCount = 0;
                 totalTime = 0;
+                callback.onNextSecond();
             }
 
             System.out.println(Tools.Fps.getCurrentFps());
         }
 
+    }
+
+    public interface FrameCallback{
+        void onNextSecond();
     }
 
 }

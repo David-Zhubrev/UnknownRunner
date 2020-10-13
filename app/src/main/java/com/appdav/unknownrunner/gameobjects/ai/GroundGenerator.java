@@ -30,7 +30,7 @@ public class GroundGenerator {
 
     public GroundGenerator() {
         this.random = Tools.random;
-        length = Screen.screenWidth + 128;
+        length = (int) (Screen.screenWidth * 2);
     }
 
     public GroundGenerationPattern nextPattern(int fromX, int blockWidth) {

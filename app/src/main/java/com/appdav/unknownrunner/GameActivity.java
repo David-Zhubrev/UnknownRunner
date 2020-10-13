@@ -5,11 +5,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.appdav.unknownrunner.tools.Score;
 
 public class GameActivity extends AppCompatActivity implements Dialogs.DialogCallback, GameView.GameActivityCallback {
 
     private GameView gameView;
     private ImageView ivPause;
+    private TextView tvScore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +29,13 @@ public class GameActivity extends AppCompatActivity implements Dialogs.DialogCal
                 new Dialogs.PauseDialog(GameActivity.this).show(getSupportFragmentManager(), null);
             }
         });
+        tvScore = findViewById(R.id.tvScore);
+        tvScore.setText(createScoreText());
         gameView.attachCallback(this);
+    }
+
+    private String createScoreText(){
+        return "Score: " + Score.score;
     }
 
     private void hideSystemUi() {
@@ -87,5 +97,8 @@ public class GameActivity extends AppCompatActivity implements Dialogs.DialogCal
         ivPause.setVisibility(View.INVISIBLE);
     }
 
-
+    @Override
+    public void onScoreUpdated() {
+        runOnUiThread(() -> tvScore.setText(createScoreText()));
+    }
 }

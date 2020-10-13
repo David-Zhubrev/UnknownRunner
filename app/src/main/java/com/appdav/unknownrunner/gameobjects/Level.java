@@ -9,6 +9,7 @@ import com.appdav.unknownrunner.gameobjects.ai.GroundGenerator;
 import com.appdav.unknownrunner.gameobjects.ai.HumanPlayer;
 import com.appdav.unknownrunner.gameobjects.characters.Enemy;
 import com.appdav.unknownrunner.gameobjects.characters.MainCharacter;
+import com.appdav.unknownrunner.gameobjects.collectibles.Collectible;
 import com.appdav.unknownrunner.tools.CollisionHandler;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public abstract class Level implements GameDrawable, MainCharacter.GameOverCallb
     protected List<GameDrawable> drawables;
     protected List<Collidable> collidables;
     protected List<Enemy> enemies;
+    protected List<Collectible> collectibles;
 
     protected Background background;
 
@@ -67,6 +69,9 @@ public abstract class Level implements GameDrawable, MainCharacter.GameOverCallb
                 if (drawable instanceof MainCharacter) {
                     endGame();
                 }
+                if (drawable instanceof Collectible) {
+                    collectibles.remove(drawable);
+                }
                 if (drawables != null) drawables.remove(drawable);
             }
         }
@@ -95,6 +100,11 @@ public abstract class Level implements GameDrawable, MainCharacter.GameOverCallb
         }
         if (drawables != null) {
             for (GameDrawable drawable : drawables) {
+                drawable.update();
+            }
+        }
+        if (collectibles != null) {
+            for (GameDrawable drawable : collectibles) {
                 drawable.update();
             }
         }
