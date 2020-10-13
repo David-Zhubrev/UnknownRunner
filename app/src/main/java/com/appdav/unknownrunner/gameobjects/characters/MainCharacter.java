@@ -1,6 +1,7 @@
 package com.appdav.unknownrunner.gameobjects.characters;
 
 import android.content.res.Resources;
+import android.graphics.Rect;
 
 import com.appdav.unknownrunner.R;
 import com.appdav.unknownrunner.Speed;
@@ -27,27 +28,31 @@ public class MainCharacter extends Character implements GameObject.Callback {
     private static final int JUMP_HEIGHT = 300;
     private static final int initialPosition = Screen.screenWidth / 3;
 
+    protected int jumpCounter = 0;
+
     private GameOverCallback callback;
 
     public MainCharacter(Resources res, Speed speed, GameOverCallback callback) {
-        super(res, speed, 6);
+        super(res, speed, 5);
         createSecondaryFrameManagers();
         this.extraSpeed = -speed.speed / 2;
-        thresholdTop = thresholdBottom = height / 4;
+        thresholdTop = height / 10;
+        thresholdBottom = height / 5;
         thresholdLeft = thresholdRight = width / 4;
         this.callback = callback;
     }
 
     private void die() {
         currentFrameManager = dyingFrameManager;
-        if (!dyingFrameManager.hasCallback()) dyingFrameManager.attachCallback(this);
+        dyingFrameManager.attachCallback(this);
         attachPlayer(new FallAi(this));
         callback.gameOver();
     }
 
     @Override
     public void update() {
-        if (isDestroyed) callback.endGame();
+        if (isDestroyed)
+            callback.endGame();
         super.update();
     }
 
@@ -59,6 +64,14 @@ public class MainCharacter extends Character implements GameObject.Callback {
         } else if (x < initialPosition) {
             nextMoves.add(Move.MOVE_RIGHT);
         }
+        if (nextMoves.contains(Move.DROP)) {
+            isJumping = false;
+            if (!nextMoves.contains(Move.FALL)) {
+                nextMoves.add(Move.FALL);
+            }
+            currentVerticalSpeed = 200;
+        }
+
         if (isJumping) nextMoves.add(Move.JUMP);
         if (collisions != null && !collisions.isEmpty()) {
             for (Collision collision : collisions) {
@@ -68,6 +81,11 @@ public class MainCharacter extends Character implements GameObject.Callback {
                         nextMoves.add(Move.JUMP);
                     } else {
                         die();
+                    }
+                } else if (collision.source instanceof Platform) {
+                    if (collision.position == CollisionHandler.Position.TOP) {
+                        isJumping = false;
+                        currentVerticalSpeed = 0;
                     }
                 }
             }
@@ -88,6 +106,9 @@ public class MainCharacter extends Character implements GameObject.Callback {
             }
         }
         if (nextMoves == null) return;
+        if (!nextMoves.contains(Move.JUMP) && !nextMoves.contains(Move.FALL)) {
+            jumpCounter = 0;
+        }
         if (isJumping) {
             nextMoves.remove(Move.FALL);
         }
@@ -99,10 +120,12 @@ public class MainCharacter extends Character implements GameObject.Callback {
                 if (!isJumping) {
                     isJumping = true;
                     currentVerticalSpeed = -70;
+                    jumpCounter++;
                 }
                 JumpInterpolator.nextMove(this);
             }
         }
+        nextMoves.remove(Move.SHIFT_LEFT);
     }
 
     @Override
@@ -116,9 +139,14 @@ public class MainCharacter extends Character implements GameObject.Callback {
         }
         if (dyingFrameManager == null) {
             dyingFrameManager = createDyingFrameManager();
+        } else {
+            dyingFrameManager.detachCallback();
+            dyingFrameManager.attachCallback(this);
         }
         if (deadFrameManager == null) {
             deadFrameManager = createDeadFrameManager();
+        } else {
+            deadFrameManager.attachCallback(this);
         }
     }
 
@@ -189,14 +217,27 @@ public class MainCharacter extends Character implements GameObject.Callback {
 
     private FrameManager createDeadFrameManager() {
         if (deadFrameManager != null) return deadFrameManager;
-        return createFrameManager(R.drawable.wraith_03_dying_014);
+        return createFrameManager(R.drawable.wraith_03_dying_014, this);
     }
+
+    private int deadFrameCounter = 0;
 
     @Override
     public void onLastFrameShown(FrameManager manager) {
         if (manager == dyingFrameManager) {
             currentFrameManager = deadFrameManager;
         }
+        if (manager == deadFrameManager) {
+            deadFrameCounter++;
+            if (deadFrameCounter >= 60){
+                callback.endGame();
+            }
+        }
+    }
+
+    @Override
+    public Rect getCollisionRect() {
+        return super.getCollisionRect();
     }
 
     public interface GameOverCallback {

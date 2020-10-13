@@ -73,16 +73,13 @@ public abstract class Character extends GameObject implements Playable, Collidab
                     }
                     if (collision.position == Position.BOTTOM) {
                         nextMoves.remove(Move.FALL);
+                        if (!isJumping) currentVerticalSpeed = 0;
                     }
                     if (collision.position == Position.LEFT) {
-                        nextMoves.remove(Move.JUMP);
-                        isJumping = false;
                         nextMoves.add(Move.SHIFT_LEFT);
                         nextMoves.remove(Move.MOVE_LEFT);
                         nextMoves.remove(Move.MOVE_RIGHT);
                     } else if (collision.position == Position.RIGHT) {
-                        nextMoves.remove(Move.JUMP);
-                        isJumping = false;
                         nextMoves.add(Move.SHIFT_LEFT);
                         nextMoves.remove(Move.MOVE_LEFT);
                         nextMoves.remove(Move.MOVE_RIGHT);
@@ -146,24 +143,23 @@ public abstract class Character extends GameObject implements Playable, Collidab
     }
 
 
-
     protected static class JumpInterpolator {
 
         private static final int MAX_SPEED = 70;
-        private static final int threshold = 30;
+        private static final int threshold = 10;
 
         public static void nextMove(Character character) {
-            int g = 10;
-            float time = 1f / 4;
-            character.currentVerticalSpeed += g / 4f;
-            if (character.currentVerticalSpeed < 0 && character.currentVerticalSpeed > threshold) {
+            int g = 40;
+            float time = 1f / 2.5f;
+            character.currentVerticalSpeed += g / 10f;
+            if (character.currentVerticalSpeed > 0 && character.currentVerticalSpeed < threshold) {
                 character.currentVerticalSpeed = 30;
             }
             if (character.currentVerticalSpeed >= 0) character.isJumping = false;
-            if (character.currentVerticalSpeed > MAX_SPEED)
+            if (character.y + character.height > Screen.screenHeight - Screen.screenHeight / 4 && character.currentVerticalSpeed > MAX_SPEED)
                 character.currentVerticalSpeed = MAX_SPEED;
+            int y = (int) (character.y + character.currentVerticalSpeed * time);
             character.y += character.currentVerticalSpeed * time;
-
         }
 
     }

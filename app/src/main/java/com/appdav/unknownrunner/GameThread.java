@@ -13,6 +13,7 @@ public class GameThread extends Thread {
     private GameView gameView;
     private GameDrawable currentLevel;
     private boolean isRunning = false;
+    private int frameCount = 0;
 
     private final static int WAIT_TIME_LIMIT = 1000;
 
@@ -28,13 +29,16 @@ public class GameThread extends Thread {
         this.currentLevel = gameView.getLevel();
     }
 
+    public int getFrameCount(){
+        return frameCount;
+    }
+
     @Override
     public void run() {
         long startTime;
         long drawTime;
         long waitTime;
         long totalTime = 0;
-        int frameCount = 0;
         long targetTime = 1000 / targetFps;
         while (isRunning && currentLevel != null && !currentLevel.isDestroyed()) {
             if (surfaceHolder == null || !surfaceHolder.getSurface().isValid()) continue;

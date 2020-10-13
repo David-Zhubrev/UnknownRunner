@@ -9,6 +9,7 @@ import com.appdav.unknownrunner.gameobjects.Collidable;
 import com.appdav.unknownrunner.gameobjects.Collision;
 import com.appdav.unknownrunner.gameobjects.GameObject;
 import com.appdav.unknownrunner.tools.Screen;
+import com.appdav.unknownrunner.tools.Tools;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class Platform extends GameObject implements Collidable {
     public Platform(Resources res, Speed speed) {
         super(res, 1);
         this.speed = speed;
+        Tools.blockHeight = this.height;
     }
 
     @Override

@@ -6,6 +6,8 @@ public class Tools {
 
     public static final Random random = new Random();
 
+    public static int blockHeight;
+
     public static class Fps {
 
         private static int currentFps;
@@ -13,6 +15,8 @@ public class Tools {
         private static double averageFps;
 
         private final static int targetFps = 60;
+
+
 
         public static int getTargetFps() {
             return targetFps;

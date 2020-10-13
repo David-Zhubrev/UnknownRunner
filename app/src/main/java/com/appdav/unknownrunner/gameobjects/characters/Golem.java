@@ -21,7 +21,7 @@ public class Golem extends Enemy implements GameObject.Callback {
     private static FrameManager dieFrameManager;
     private static FrameManager winFrameManager;
 
-    private static final int GOLEM_DOWNSCALE = 8;
+    private static final int GOLEM_DOWNSCALE = 10;
     private static final int GOLEM_SPEED = 10;
 
     public Golem(Resources res, Speed speed) {

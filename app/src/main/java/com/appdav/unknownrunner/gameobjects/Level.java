@@ -7,12 +7,10 @@ import android.graphics.Paint;
 import com.appdav.unknownrunner.Speed;
 import com.appdav.unknownrunner.gameobjects.ai.GroundGenerator;
 import com.appdav.unknownrunner.gameobjects.ai.HumanPlayer;
-import com.appdav.unknownrunner.gameobjects.characters.Character;
 import com.appdav.unknownrunner.gameobjects.characters.Enemy;
 import com.appdav.unknownrunner.gameobjects.characters.MainCharacter;
 import com.appdav.unknownrunner.tools.CollisionHandler;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Level implements GameDrawable, MainCharacter.GameOverCallback {
@@ -30,15 +28,15 @@ public abstract class Level implements GameDrawable, MainCharacter.GameOverCallb
 
     protected HumanPlayer player;
 
-    private StopThreadListener stopThreadListener;
+    private UiGameplayCallback uiGameplayCallback;
 
     private boolean isDestroyed = false;
 
-    public Level(Resources res, Speed speed, StopThreadListener listener) {
+    public Level(Resources res, Speed speed, UiGameplayCallback listener) {
         this.res = res;
         this.speed = speed;
         initializeObjects();
-        this.stopThreadListener = listener;
+        this.uiGameplayCallback = listener;
     }
 
     abstract protected void initializeObjects();
@@ -112,8 +110,8 @@ public abstract class Level implements GameDrawable, MainCharacter.GameOverCallb
 
     @Override
     public void endGame() {
+        uiGameplayCallback.onGameOver();
         this.destroy();
-        stopThreadListener.onThreadShouldBeStopped();
     }
 
 
@@ -140,9 +138,9 @@ public abstract class Level implements GameDrawable, MainCharacter.GameOverCallb
         return isDestroyed;
     }
 
-    public interface StopThreadListener {
+    public interface UiGameplayCallback {
 
-        void onThreadShouldBeStopped();
+        void onGameOver();
 
     }
 }

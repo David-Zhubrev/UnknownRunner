@@ -121,7 +121,7 @@ public class Ground implements GameDrawable {
             platformWidth = platform.width;
             platformHeight = platform.height;
             ground_level_low = Screen.screenHeight - platformHeight;
-            ground_level_high = Screen.screenHeight - platformHeight * 4;
+            ground_level_high = Screen.screenHeight - platformHeight * 3;
             platform.destroy();
         }
         GroundGenerationPattern pattern = generator.nextPattern(startingCoordinate, platformWidth);

@@ -30,11 +30,15 @@ public class CollisionHandler {
             vertical = intersection.top == b.top ? Position.BOTTOM : Position.TOP;
             int width = abs(intersection.left - intersection.right);
             int height = abs(intersection.top - intersection.bottom);
+            int bWidth = abs(b.left - b.right);
             int bHeight = abs(b.top - b.bottom);
-            result = (width > height || height < bHeight / 3 ) ?
-                    vertical : horizontal;
-            collidable1.onCollisionWith(new Collision(collidable2, result));
-            collidable2.onCollisionWith(new Collision(collidable1, result));
+            if (width > height && width > bWidth / 5) result = vertical;
+            else if (height > width && height > bHeight / 3) result = horizontal;
+            else result = null;
+            if (result != null) {
+                collidable1.onCollisionWith(new Collision(collidable2, result));
+                collidable2.onCollisionWith(new Collision(collidable1, result));
+            }
         }
     }
 }

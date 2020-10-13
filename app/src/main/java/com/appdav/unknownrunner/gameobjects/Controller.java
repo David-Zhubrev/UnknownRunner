@@ -5,4 +5,6 @@ public interface Controller {
     void onLeftSideClick();
     void onRightSideClick();
 
+    void onSwipeBottom();
+
 }

@@ -31,6 +31,14 @@ public abstract class GameObject implements GameDrawable {
 
     private List<FrameManager> managers;
 
+    public int getWidth(){
+        return this.width;
+    }
+
+    public int getHeight(){
+        return this.height;
+    }
+
     public GameObject(Resources res, int downScale) {
         this.res = res;
         this.downScale = downScale;

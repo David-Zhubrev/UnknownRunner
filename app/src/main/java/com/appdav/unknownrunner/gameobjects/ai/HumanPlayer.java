@@ -36,5 +36,11 @@ public class HumanPlayer implements Player, Controller {
         character.move(Move.JUMP);
     }
 
+    @Override
+    public void onSwipeBottom() {
+        if (character != null)
+            character.move(Move.DROP);
+    }
+
 
 }

@@ -3,7 +3,6 @@ package com.appdav.unknownrunner.gameobjects;
 import android.content.res.Resources;
 
 import com.appdav.unknownrunner.Speed;
-import com.appdav.unknownrunner.gameobjects.ai.GroundGenerator;
 import com.appdav.unknownrunner.gameobjects.ai.HumanPlayer;
 import com.appdav.unknownrunner.gameobjects.characters.Golem;
 import com.appdav.unknownrunner.gameobjects.characters.MainCharacter;
@@ -15,7 +14,7 @@ public class MountainLevel extends Level {
 
     private static Speed speed = new Speed(15);
 
-    public MountainLevel(Resources res, StopThreadListener listener) {
+    public MountainLevel(Resources res, UiGameplayCallback listener) {
         super(res, speed, listener);
         speed = new Speed(15);
 

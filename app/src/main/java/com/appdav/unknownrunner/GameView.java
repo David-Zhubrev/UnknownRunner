@@ -12,22 +12,23 @@ import com.appdav.unknownrunner.gameobjects.Controller;
 import com.appdav.unknownrunner.gameobjects.GameDrawable;
 import com.appdav.unknownrunner.gameobjects.Level;
 import com.appdav.unknownrunner.gameobjects.MountainLevel;
-import com.appdav.unknownrunner.gameobjects.Player;
-import com.appdav.unknownrunner.gameobjects.ai.HumanPlayer;
+import com.appdav.unknownrunner.tools.OnSwipeTouchListener;
 import com.appdav.unknownrunner.tools.Screen;
 
-public class GameView extends SurfaceView implements SurfaceHolder.Callback, Level.StopThreadListener {
+public class GameView extends SurfaceView implements SurfaceHolder.Callback, Level.UiGameplayCallback {
 
     private GameThread thread;
-    private GameDrawable currentLevel;
+    private Level currentLevel;
     private Paint paint;
+
+
+    private GameActivityCallback callback;
 
     private Controller controller;
 
     private boolean isRunning;
 
     private boolean isInitialized = false;
-
 
     public GameView(Context context) {
         super(context);
@@ -44,12 +45,25 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Lev
         init();
     }
 
+    public void attachCallback(GameActivityCallback callback) {
+        this.callback = callback;
+    }
+
+    public void detachCallback() {
+        this.callback = null;
+    }
 
     private void init() {
         getHolder().addCallback(this);
         Level level = new MountainLevel(getResources(), this);
         this.currentLevel = level;
         this.controller = level.getController();
+        setOnTouchListener(new OnSwipeTouchListener(this.getContext(), new OnSwipeTouchListener.Callback() {
+            @Override
+            public void onSwipeBottom() {
+                controller.onSwipeBottom();
+            }
+        }));
         this.paint = new Paint();
         setFocusable(true);
         isInitialized = true;
@@ -83,15 +97,22 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Lev
         if (thread != null) {
             thread.setRunning(false);
         }
-        isInitialized = false;
+        callback.onGamePaused();
     }
 
     public void startThread() {
         if (!isInitialized) init();
+        controller = currentLevel.getController();
         thread = new GameThread(getHolder(), this);
         isRunning = true;
         thread.setRunning(true);
         thread.start();
+        while (true){
+            if (thread.getFrameCount() > 3){
+                callback.onGameStart();
+                return;
+            }
+        }
     }
 
     @Override
@@ -134,11 +155,22 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Lev
 
     public void restart() {
         this.currentLevel = new MountainLevel(getResources(), this);
+        startThread();
     }
-
 
     @Override
-    public void onThreadShouldBeStopped() {
+    public void onGameOver() {
         stopThread();
+        if (callback != null) callback.onGameOverScreenShow();
     }
+
+    public interface GameActivityCallback {
+        void onGameOverScreenShow();
+
+        void onGameStart();
+
+        void onGamePaused();
+    }
+
+
 }
